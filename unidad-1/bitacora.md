@@ -11,6 +11,9 @@
 ### Actividad 02
 1) es una sistema creado para generar diseños sin fin que se pueden modificar al gusto del usuario dependiendo de su necesidad.
 2) la creacion de patrones para modelos 3D que ayuden a definir nuevas esteticas ej: un sistema que genere patrones que simulen manchas de nieve para modelos ambientados en lugares nevados.
+<img width="1154" height="383" alt="image" src="https://github.com/user-attachments/assets/fb9948f6-fde4-450f-81fd-99bd782365a9" />
+
+<img width="1179" height="769" alt="image" src="https://github.com/user-attachments/assets/134ad8eb-23b9-4ad4-8514-e22a78632f88" />
 
 ## Bitácora de aplicación 
 
@@ -18,5 +21,6 @@
 
 
 ## Bitácora de reflexión
+
 
 
