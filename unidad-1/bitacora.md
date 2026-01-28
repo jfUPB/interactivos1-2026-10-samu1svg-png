@@ -155,8 +155,82 @@ while True:
         sleep(500)
 
     ``` 
+## codigo limpio
+``` .asm
+let port;
+let connectBtn;
+let x= 350;
+let dataRx;
 
+function setup() {
+  createCanvas(400, 400);
+  background(220);
+  port = createSerial();
+ 
+  connectBtn = createButton("Connect to micro:bit");
+  connectBtn.position(80, 300);
+ connectBtn.mousePressed(connectBtnClick);
+
+  
+  fill("red");
+  ellipse(x / 2, height / 2, 100, 100);
+}
+  function connectBtnClick() {
+    if (!port.opened()) {
+        port.open('MicroPython', 115200);
+    } else {
+        port.close();
+    }
+  }
+function draw() {
+  
+  background(220);
+        ellipse(x / 2, height / 2, 100, 100);
+        fill('red');
+        text(dataRx, x / 2, height / 2);
+  
+  if (port.availableBytes() > 0) {
+    
+     dataRx = port.read(1);
+    if (dataRx == "A") {
+      x -= 10;
+    } else if (dataRx == "B") {
+      x += 10;
+    }
+    x= constrain(x,0,width);
+  
+  }
+ 
+    
+
+  if (!port.opened()) {
+    connectBtn.html("Connect to micro:bit");
+  } else {
+    connectBtn.html("Disconnect");
+  }
+
+}
+```
+### microbit:
+``` .asm
+# Imports go at the top
+from microbit import *
+
+uart.init(baudrate=115200)
+display.show(Image.BUTTERFLY)
+
+while True:
+    if button_a.is_pressed():
+        uart.write('A')
+
+
+        sleep(500)
+    if button_b.is_pressed():
+        uart.write('B')
+       
+    ```
 ## Bitácora de reflexión
+
 
 
 
