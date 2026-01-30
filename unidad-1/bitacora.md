@@ -389,32 +389,32 @@ while True:
 ### Codigo de p5.js
 #### Index.Html
 ```.asm
- <script src="https://unpkg.com/@gohai/p5.webserial@^1/libraries/p5.webserial.js"></script> la libreria 
+ <script src="https://unpkg.com/@gohai/p5.webserial@^1/libraries/p5.webserial.js"></script> // permite la conexión con el microbit
 ```
 #### Sketch.js
 ```.asm
   let port;
   let connectBtn;
-  let connectionInitialized = false;
+  let connectionInitialized = false;// variables libres 
 
-  function setup() {
+  function setup() { // funcion que se ejecuta una sola vez
     createCanvas(400, 400);
-    background(220);
-    port = createSerial();
-    connectBtn = createButton("Connect to micro:bit");
-    connectBtn.position(80, 300);
-    connectBtn.mousePressed(connectBtnClick);
+    background(220); crea el canvas 
+    port = createSerial();                 // crea el puerto serial,
+    connectBtn = createButton("Connect to micro:bit"); //crea el boton que dice connect to microbit
+    connectBtn.position(80, 300);    
+    connectBtn.mousePressed(connectBtnClick);   //cuando se presiona el boton lleva a que acciones hace
   }
 
-  function draw() {
+  function draw() {  // funcion que se ejecuta constantemente
     background(220);
 
-    if (port.opened() && !connectionInitialized) {
+    if (port.opened() && !connectionInitialized) { 
       port.clear();
       connectionInitialized = true;
     }
 
-    if (port.availableBytes() > 0) {
+    if (port.availableBytes() > 0) { revisa si en el puerto hay algun mensaje disponible
       let dataRx = port.read(1);
       if (dataRx == "A") {
         fill("red");
@@ -423,19 +423,19 @@ while True:
       }
     }
 
-    rectMode(CENTER);
+    rectMode(CENTER);                   // crea el cuadrado
     rect(width / 2, height / 2, 50, 50);
 
     if (!port.opened()) {
-      connectBtn.html("Connect to micro:bit");
+      connectBtn.html("Connect to micro:bit");  // cambia el texto del boton dependiendo si es presionado
     } else {
       connectBtn.html("Disconnect");
     }
   }
 
-  function connectBtnClick() {
+  function connectBtnClick() { 
     if (!port.opened()) {
-      port.open("MicroPython", 115200);
+      port.open("MicroPython", 115200);   // se revisa si la conexion esta abierta entre el mirobit edito y p5.js
       connectionInitialized = false;
     } else {
       port.close();
@@ -444,6 +444,7 @@ while True:
 ```
 
 colorin colorado esta unidad se ha acabado
+
 
 
 
