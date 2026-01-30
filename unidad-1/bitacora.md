@@ -21,29 +21,34 @@
 <img width="1179" height="769" alt="image" src="https://github.com/user-attachments/assets/134ad8eb-23b9-4ad4-8514-e22a78632f88" />
 
 ## Actividad 03
-Hecha en clase principios del uso del microbit
+-Hecha en clase principios del uso del microbit
 
 ## Actividad 04
 -Vamos a crear juntos un programa en p5.js que interactúe con un micro:bit. La idea es que el programa en p5.js muestre un cuadrado en la pantalla que cambie de color al presionar un botón del micro:bit y regrese a su color original al soltar el botón.
 
-1) Vamos a crear un programa en el micro:bit que tenga un input (un botón) y un output (enviar un mensaje por serial) que indique que se ha presionado el botón.
+## 1) Creación del programa del micro:bit
+
+Vamos a crear un programa en el micro:bit que tenga un input (un botón) y un output (enviar un mensaje por serial) que indique que se ha presionado el botón.
 
 Lo primero que debes hacer es abrir el editor de micro:bit. Luego, importa de la biblioteca microbit todas las funciones que necesitas para interactuar con el micro:bit.
 ```.asm
  from microbit import *
 
 ```
-2) Ahora vamos a leer el estado del botón A del micro:bit. Para ello, utilizaremos un bucle que se ejecutará continuamente y verificará si el botón A ha sido presionado.
+## 2)Lectura del boton
+Ahora vamos a leer el estado del botón A del micro:bit. Para ello, utilizaremos un bucle que se ejecutará continuamente y verificará si el botón A ha sido presionado.
 
 Observa que utilizamos button_a.was_pressed() para detectar si el botón ha sido presionado. También podrías usar button_a.is_pressed() si quieres saber si el botón está presionado en ese momento, pero was_pressed() es más adecuado para detectar eventos únicos como un clic. Si usas is_pressed(), el programa podría enviar múltiples mensajes si el botón se mantiene presionado. ¿Ves la diferencia?
 ```.asm
   from microbit import *
 
   while True:
-      if button_a.was_pressed():
-
+      if button_a.is_pressed():
+// en el original aparece como was pero no funciona por eso lo corregi :)
 ```
-3) Ahora que sabemos cuándo se presiona el botón, vamos a enviar un mensaje por el puerto serial del micro:bit. Esto nos permitirá recibir el mensaje en p5.js.
+## 3) Lectura del botón y envío del mensaje
+
+ Ahora que sabemos cuándo se presiona el botón, vamos a enviar un mensaje por el puerto serial del micro:bit. Esto nos permitirá recibir el mensaje en p5.js.
 
 Nota que debes inicializar la comunicación serial con uart.init(baudrate=115200) antes de enviar mensajes. El baudrate es la velocidad de transmisión de datos, y 115200 es una velocidad comúnmente utilizada para la comunicación serial. Finalmente, utilizamos uart.write('A') para enviar el mensaje ‘A’ cuando se presiona el botón A.
 ```.asm
@@ -56,10 +61,90 @@ Nota que debes inicializar la comunicación serial con uart.init(baudrate=115200
           uart.write('A')
 
 ```
-4) 
+## 4) Aplicación en p5.js - Biblioteca de conexión serial
+Lo primero que debes hacer es añadir la biblioteca que te permite conectar el micro:bit con p5.js. Recuerda que esto lo haces en el archivo index.html de tu proyecto p5.js.
+```.asm
+<script src="https://unpkg.com/@gohai/p5.webserial@^1/libraries/p5.webserial.js"></script>
+
+```
+## 5) Aplicación en p5.js - Configuración inicial
+Vas a crear un par de variables globales (estas las creas por fuera de cualquier función). Al ser globales, podrás acceder a ellas desde cualquier parte del código. Estas variables te servirán para almacenar una referencia al objeto que te permitirá manipular el puerto serial y la otra variable te servirá para guardar una referencia al objeto que representa el botón con el cual podrías conectar y desconectar el micro:bit de la aplicación.
+
+Observa la función connectBtnClick(). Esta función se ejecuta cuando el usuario hace click en el botón de conexión. A esto se le llama un “event handler” o manejador de eventos.
+```.asm
+let port;
+let connectBtn;
+
+function setup() {
+    createCanvas(400, 400);
+    background(220);
+    port = createSerial();
+    connectBtn = createButton('Connect to micro:bit');
+    connectBtn.position(80, 300);
+    connectBtn.mousePressed(connectBtnClick);
+}
+
+function draw() {
+}
+
+function connectBtnClick() {
+    if (!port.opened()) {
+        port.open('MicroPython', 115200);
+    } else {
+        port.close();
+    }
+}
+
+```
+## 6) Aplicación en p5.js - Dibujar en cada frame
+En draw() vas a dibujar un cuadrado en la pantalla todo el tiempo, pero tendrás que decidir en cada frame qué color debe tener. Entonces, antes de dibujarlo vas a leer el puerto serial y ver si hay algún mensaje disponible. Si hay un mensaje, lo vas a leer (debes siempre consumir el mensaje para que no se acumule) y cambiarás el color a rojo. Si no hay mensaje, el cuadrado será de color verde.
+
+Antes de terminar el frame vas a actualizar el estado del botón para que refleje el estado de conexión del micro:bit.
+
+
 ```.asm
 
+    let port;
+    let connectBtn;
 
+    function setup() {
+        createCanvas(400, 400);
+        background(220);
+        port = createSerial();
+        connectBtn = createButton("Connect to micro:bit");
+        connectBtn.position(80, 300);
+        connectBtn.mousePressed(connectBtnClick);
+    }
+
+    function draw() {
+        background(220);
+
+        if (port.availableBytes() > 0) {
+            let dataRx = port.read(1);
+            if (dataRx == "A") {
+            fill("red");
+            }
+        } else {
+            fill("green");
+        }
+
+        rectMode(CENTER);
+        rect(width / 2, height / 2, 50, 50);
+
+        if (!port.opened()) {
+            connectBtn.html("Connect to micro:bit");
+        } else {
+            connectBtn.html("Disconnect");
+        }
+    }
+
+    function connectBtnClick() {
+        if (!port.opened()) {
+            port.open("MicroPython", 115200);
+        } else {
+            port.close();
+        }
+    }
 ```
 ```.asm
 
@@ -67,7 +152,7 @@ Nota que debes inicializar la comunicación serial con uart.init(baudrate=115200
 ```
 
 ## Bitácora de aplicación
-### Actividad 05
+## Actividad 05
 El programa de p5.js.
 ``` .asm
 // Declara la variable que manejará la comunicación serial
@@ -173,7 +258,7 @@ function draw() {
 }
 
 ```
-El programa de micro:bit.
+## El programa de micro:bit.
 ``` .asm
 # Importa todas las librerías básicas del micro:bit
 from microbit import *
@@ -208,7 +293,7 @@ while True:
 ```
 
 
-## codigo limpio
+## codigo limpio (NO comentado)
 ``` .asm
 let port;
 let connectBtn;
@@ -264,7 +349,7 @@ function draw() {
 
 }
 ```
-### microbit:
+## microbit:
 ``` .asm
 # Imports go at the top
 from microbit import *
@@ -283,6 +368,7 @@ while True:
        
 ```
 ## Bitácora de reflexión
+
 
 
 
