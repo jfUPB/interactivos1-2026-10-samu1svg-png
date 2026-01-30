@@ -151,7 +151,7 @@ Antes de terminar el frame vas a actualizar el estado del botón para que reflej
 
 ```
 
-## Bitácora de aplicación
+# Bitácora de aplicación
 ## Actividad 05
 El programa de p5.js.
 ``` .asm
@@ -367,10 +367,83 @@ while True:
         uart.write('B')
        
 ```
-## Bitácora de reflexión
+# Bitácora de reflexión
+-Lo aprendido en esta unidad son apenas las ideas basicas de como utlizar los programas,todavia no comprendo el nivel al que puede crear sin embargo lo aprendido puede servirme al futuro si logro comprender a mas profundidad las proximas unidades, por ahora quedo con las ideas fundamentales.
+## Actividad 06
+### Codigo de microbit
+```.asm
+from microbit import *// importa toda la libreria de herramientas de microbit para usar el microchip
 
+uart.init(baudrate=115200)// es la inicializacion con la conexion serial el numero es un tipo de velocidad comunmente utilizada
 
+while True:
 
+    if button_a.is_pressed(): si el boton es presionado envia "A" en caso contrario envia "n"
+        uart.write('A')
+    else:
+        uart.write('N')
+
+    sleep(100)
+
+```
+### Codigo de p5.js
+#### Index.Html
+```.asm
+ <script src="https://unpkg.com/@gohai/p5.webserial@^1/libraries/p5.webserial.js"></script> la libreria 
+```
+#### Sketch.js
+```.asm
+  let port;
+  let connectBtn;
+  let connectionInitialized = false;
+
+  function setup() {
+    createCanvas(400, 400);
+    background(220);
+    port = createSerial();
+    connectBtn = createButton("Connect to micro:bit");
+    connectBtn.position(80, 300);
+    connectBtn.mousePressed(connectBtnClick);
+  }
+
+  function draw() {
+    background(220);
+
+    if (port.opened() && !connectionInitialized) {
+      port.clear();
+      connectionInitialized = true;
+    }
+
+    if (port.availableBytes() > 0) {
+      let dataRx = port.read(1);
+      if (dataRx == "A") {
+        fill("red");
+      } else if (dataRx == "N") {
+        fill("green");
+      }
+    }
+
+    rectMode(CENTER);
+    rect(width / 2, height / 2, 50, 50);
+
+    if (!port.opened()) {
+      connectBtn.html("Connect to micro:bit");
+    } else {
+      connectBtn.html("Disconnect");
+    }
+  }
+
+  function connectBtnClick() {
+    if (!port.opened()) {
+      port.open("MicroPython", 115200);
+      connectionInitialized = false;
+    } else {
+      port.close();
+    }
+  }
+```
+
+colorin colorado esta unidad se ha acabado
 
 
 
