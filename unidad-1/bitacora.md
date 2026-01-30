@@ -1,19 +1,70 @@
-# Unidad 1
+# Bitacora de la Unidad 1
 
-## Bitácora de proceso de aprendizaje
-# hola
-### Actividad 01
-1) es una forma de generar experiencias combinando el diseño y las nuevas tecnologias generativas.
-2) es una rama que puedo utilizar para generar creativamente ideas o diseñosutiles para pulir una estetica en mi portafolio.
+
+
+## Actividad 01
+
+
+### 1) Creación del programa microbit
+ es una forma de generar experiencias combinando el diseño y las nuevas tecnologias generativas.
+
+### 2) Lectua del boton
+ es una rama que puedo utilizar para generar creativamente ideas o diseñosutiles para pulir una estetica en mi portafolio.
    (probando insertar imagenes)
 <img width="1517" height="609" alt="image" src="https://github.com/user-attachments/assets/db13af69-9bf6-473b-ab7d-d65640f4b50c" />
-```js
-### Actividad 02
+
+## Actividad 02
 1) es una sistema creado para generar diseños sin fin que se pueden modificar al gusto del usuario dependiendo de su necesidad.
 2) la creacion de patrones para modelos 3D que ayuden a definir nuevas esteticas ej: un sistema que genere patrones que simulen manchas de nieve para modelos ambientados en lugares nevados.
 <img width="1154" height="383" alt="image" src="https://github.com/user-attachments/assets/fb9948f6-fde4-450f-81fd-99bd782365a9" />
 
 <img width="1179" height="769" alt="image" src="https://github.com/user-attachments/assets/134ad8eb-23b9-4ad4-8514-e22a78632f88" />
+
+## Actividad 03
+Hecha en clase principios del uso del microbit
+
+## Actividad 04
+-Vamos a crear juntos un programa en p5.js que interactúe con un micro:bit. La idea es que el programa en p5.js muestre un cuadrado en la pantalla que cambie de color al presionar un botón del micro:bit y regrese a su color original al soltar el botón.
+
+1) Vamos a crear un programa en el micro:bit que tenga un input (un botón) y un output (enviar un mensaje por serial) que indique que se ha presionado el botón.
+
+Lo primero que debes hacer es abrir el editor de micro:bit. Luego, importa de la biblioteca microbit todas las funciones que necesitas para interactuar con el micro:bit.
+```.asm
+ from microbit import *
+
+```
+2) Ahora vamos a leer el estado del botón A del micro:bit. Para ello, utilizaremos un bucle que se ejecutará continuamente y verificará si el botón A ha sido presionado.
+
+Observa que utilizamos button_a.was_pressed() para detectar si el botón ha sido presionado. También podrías usar button_a.is_pressed() si quieres saber si el botón está presionado en ese momento, pero was_pressed() es más adecuado para detectar eventos únicos como un clic. Si usas is_pressed(), el programa podría enviar múltiples mensajes si el botón se mantiene presionado. ¿Ves la diferencia?
+```.asm
+  from microbit import *
+
+  while True:
+      if button_a.was_pressed():
+
+```
+3) Ahora que sabemos cuándo se presiona el botón, vamos a enviar un mensaje por el puerto serial del micro:bit. Esto nos permitirá recibir el mensaje en p5.js.
+
+Nota que debes inicializar la comunicación serial con uart.init(baudrate=115200) antes de enviar mensajes. El baudrate es la velocidad de transmisión de datos, y 115200 es una velocidad comúnmente utilizada para la comunicación serial. Finalmente, utilizamos uart.write('A') para enviar el mensaje ‘A’ cuando se presiona el botón A.
+```.asm
+  from microbit import *
+
+  uart.init(baudrate=115200)
+
+  while True:
+      if button_a.was_pressed():
+          uart.write('A')
+
+```
+4) 
+```.asm
+
+
+```
+```.asm
+
+
+```
 
 ## Bitácora de aplicación
 ### Actividad 05
@@ -154,7 +205,9 @@ while True:
         # Pausa de 500 ms
         sleep(500)
 
-    ``` 
+```
+
+
 ## codigo limpio
 ``` .asm
 let port;
@@ -228,8 +281,9 @@ while True:
     if button_b.is_pressed():
         uart.write('B')
        
-    ```
+```
 ## Bitácora de reflexión
+
 
 
 
