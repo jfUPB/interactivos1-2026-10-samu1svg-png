@@ -91,6 +91,9 @@ while True:
     pixel1.update()
     utime.sleep_ms(20)
 ```
+
+##Actividad semana 4
+```.asm
 ## Bitácora de proceso de aprendizaje
 
 
@@ -99,3 +102,4 @@ while True:
 
 
 ## Bitácora de reflexión
+
