@@ -352,24 +352,127 @@ while True:
 @startuml
 skinparam monochrome true
 skinparam dpi 150
+skinparam state {
+    BackgroundColor white
+    BorderColor black
+}
 
 [*] --> Configuracion
 
-Configuracion : tiempo = 20 \n
-Configuracion : if/\n \n A [tiempo < 25]\n / tiempo++\n display.show(FILL[tiempo])\n
-Configuracion : if/\n \n B [tiempo > 15]\n / tiempo--\n display.show(FILL[tiempo])
-Configuracion --> Armado : S\n / myTimer.start(1000)
+state Configuracion {
+}
 
-Armado : timer activo
-Armado --> Armado : Timeout [tiempo > 0]\n / tiempo--\n display.show(FILL[tiempo])\n myTimer.start(1000)
-Armado --> Final : Timeout [tiempo == 0]\n / display.show(SKULL)\n music.play(...)
-Armado --> Configuracion : EXIT\n / myTimer.stop()
+Configuracion : ENTRY / display.show(FILL[tiempo])
+Configuracion : A [tiempo < 25] / tiempo++\ndisplay.show(FILL[tiempo])
+Configuracion : B [tiempo > 15] / tiempo--\ndisplay.show(FILL[tiempo])
 
-Final --> Configuracion : A\n / tiempo=20\n display.show(FILL[tiempo])
+Configuracion --> Armado : S / myTimer.start(1000)
+
+
+state Armado {
+}
+
+Armado : ENTRY / myTimer.start(1000)
+Armado : EXIT / myTimer.stop()
+
+Armado --> Armado : Timeout [tiempo > 0] / tiempo--\ndisplay.show(FILL[tiempo])\nmyTimer.start(1000)
+Armado --> Final : Timeout [tiempo == 0]
+
+
+state Final {
+}
+
+Final : ENTRY / display.show(SKULL)\nmusic.play(DADADADUM)
+Final --> Configuracion : A / tiempo = 20\n display.show(FILL[tiempo])
 
 @enduml
-
 ```
+##codigo del diagrama documentado
+"""
+DIAGRAMA DE MÁQUINA DE ESTADOS EN PLANTUML
+------------------------------------------
+Este bloque contiene el código PlantUML que modela
+la máquina de estados del temporizador en micro:bit.
+"""
+
+plantuml_code = """
+@startuml
+' Inicia el diagrama UML de estados
+
+skinparam monochrome true
+' Fuerza el diagrama en blanco y negro para claridad académica
+
+skinparam dpi 150
+' Mejora la resolución de exportación de la imagen
+
+skinparam state {
+    BackgroundColor white
+    BorderColor black
+}
+' Define estilo visual de los estados
+
+
+[*] --> Configuracion
+' Estado inicial del sistema apunta a "Configuracion"
+
+
+state Configuracion {
+}
+' Declaración del estado de configuración
+
+
+Configuracion : ENTRY / display.show(FILL[tiempo])
+' Al entrar al estado se muestra el tiempo actual en pantalla
+
+Configuracion : A [tiempo < 25] / tiempo++\\ndisplay.show(FILL[tiempo])
+' Botón A aumenta el tiempo si es menor que 25 y actualiza la pantalla
+
+Configuracion : B [tiempo > 15] / tiempo--\\ndisplay.show(FILL[tiempo])
+' Botón B disminuye el tiempo si es mayor que 15 y actualiza la pantalla
+
+
+Configuracion --> Armado : S / myTimer.start(1000)
+' Al detectar sacudida (shake) pasa al estado Armado
+' e inicia el temporizador de 1 segundo
+
+
+
+state Armado {
+}
+' Declaración del estado Armado
+
+
+Armado : ENTRY / myTimer.start(1000)
+' Al entrar se inicia el temporizador
+
+Armado : EXIT / myTimer.stop()
+' Al salir del estado se detiene el temporizador
+
+
+Armado --> Armado : Timeout [tiempo > 0] / tiempo--\\ndisplay.show(FILL[tiempo])\\nmyTimer.start(1000)
+' Cada segundo reduce el tiempo, actualiza pantalla
+' y reinicia el temporizador mientras tiempo > 0
+
+Armado --> Final : Timeout [tiempo == 0]
+' Cuando el tiempo llega a cero se pasa al estado Final
+
+
+
+state Final {
+}
+' Declaración del estado Final
+
+
+Final : ENTRY / display.show(SKULL)\\nmusic.play(DADADADUM)
+' Al entrar muestra una calavera y reproduce sonido
+
+Final --> Configuracion : A / tiempo = 20\\ndisplay.show(FILL[tiempo])
+' Botón A reinicia el tiempo a 20 y vuelve a Configuración
+
+
+@enduml
+' Fin del diagrama UML
+"""
 ## Bitácora de proceso de aprendizaje
 
 
@@ -378,5 +481,6 @@ Final --> Configuracion : A\n / tiempo=20\n display.show(FILL[tiempo])
 
 
 ## Bitácora de reflexión
+
 
 
