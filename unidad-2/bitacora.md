@@ -372,10 +372,11 @@ Configuracion --> Armado : S / myTimer.start(1000)
 state Armado {
 }
 
-Armado : ENTRY / myTimer.start(1000)
+Armado : ENTRY / myTimer.start(1000)\n
+Armado : Armado : Timeout [tiempo > 0] / tiempo--\ndisplay.show(FILL[tiempo])\nmyTimer.start(1000)\n
 Armado : EXIT / myTimer.stop()
 
-Armado --> Armado : Timeout [tiempo > 0] / tiempo--\ndisplay.show(FILL[tiempo])\nmyTimer.start(1000)
+
 Armado --> Final : Timeout [tiempo == 0]
 
 
@@ -444,14 +445,14 @@ state Armado {
 
 Armado : ENTRY / myTimer.start(1000)
 ' Al entrar se inicia el temporizador
-
+Armado : Timeout [tiempo > 0] / tiempo--\\ndisplay.show(FILL[tiempo])\\nmyTimer.start(1000)
+' Cada segundo reduce el tiempo, actualiza pantalla
+' y reinicia el temporizador mientras tiempo > 0
 Armado : EXIT / myTimer.stop()
 ' Al salir del estado se detiene el temporizador
 
 
-Armado --> Armado : Timeout [tiempo > 0] / tiempo--\\ndisplay.show(FILL[tiempo])\\nmyTimer.start(1000)
-' Cada segundo reduce el tiempo, actualiza pantalla
-' y reinicia el temporizador mientras tiempo > 0
+
 
 Armado --> Final : Timeout [tiempo == 0]
 ' Cuando el tiempo llega a cero se pasa al estado Final
@@ -723,6 +724,7 @@ function keyPressed() {
 
 
 ## Bitácora de reflexión
+
 
 
 
