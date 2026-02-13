@@ -388,7 +388,7 @@ Final --> Configuracion : A / tiempo = 20\n display.show(FILL[tiempo])
 @enduml
 ```
 ##codigo del diagrama documentado
-"""
+```.asm
 DIAGRAMA DE MÁQUINA DE ESTADOS EN PLANTUML
 ------------------------------------------
 Este bloque contiene el código PlantUML que modela
@@ -472,7 +472,7 @@ Final --> Configuracion : A / tiempo = 20\\ndisplay.show(FILL[tiempo])
 
 @enduml
 ' Fin del diagrama UML
-"""
+```
 ## Bitácora de proceso de aprendizaje
 
 
@@ -481,6 +481,7 @@ Final --> Configuracion : A / tiempo = 20\\ndisplay.show(FILL[tiempo])
 
 
 ## Bitácora de reflexión
+
 
 
 
