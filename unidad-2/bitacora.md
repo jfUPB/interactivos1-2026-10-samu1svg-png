@@ -474,13 +474,256 @@ Final --> Configuracion : A / tiempo = 20\\ndisplay.show(FILL[tiempo])
 ' Fin del diagrama UML
 ```
 ## Bitácora de proceso de aprendizaje
+### Actividad 5
+codigo nuevo de microbit
+```.asm
+# ================================
+# IMPORTACIONES
+# ================================
+
+from microbit import *
+import utime
+import music
+
+# ================================
+# ACTIVAR UART (COMUNICACIÓN SERIAL)
+# ================================
+
+uart.init(baudrate=115200)
+
+# ================================
+# FUNCION PARA CREAR IMÁGENES DE RELLENO
+# ================================
+
+def make_fill_images(on='9', off='0'):
+    imgs = []
+    for n in range(26):
+        rows = []
+        k = 0
+        for y in range(5):
+            row = []
+            for x in range(5):
+                row.append(on if k < n else off)
+                k += 1
+            rows.append(''.join(row))
+        imgs.append(Image(':'.join(rows)))
+    return imgs
+
+FILL = make_fill_images()
+
+# ================================
+# TIMER
+# ================================
+
+class Timer:
+    def __init__(self, owner, event_to_post, duration):
+        self.owner = owner
+        self.event = event_to_post
+        self.duration = duration
+        self.start_time = 0
+        self.active = False
+
+    def start(self, new_duration=None):
+        if new_duration is not None:
+            self.duration = new_duration
+        self.start_time = utime.ticks_ms()
+        self.active = True
+
+    def stop(self):
+        self.active = False
+
+    def update(self):
+        if self.active:
+            if utime.ticks_diff(utime.ticks_ms(), self.start_time) >= self.duration:
+                self.active = False
+                self.owner.post_event(self.event)
+
+# ================================
+# MAQUINA DE ESTADOS
+# ================================
+
+class Task:
+
+    def __init__(self):
+        self.event_queue = []
+        self.timers = []
+        self.myTimer = self.createTimer("Timeout", 1000)
+        self.tiempo = 20
+        self.estado_actual = None
+        self.transicion_a(self.estado_configuracion)
+
+    def createTimer(self, event, duration):
+        t = Timer(self, event, duration)
+        self.timers.append(t)
+        return t
+
+    def post_event(self, ev):
+        self.event_queue.append(ev)
+
+    def update(self):
+        for t in self.timers:
+            t.update()
+
+        while len(self.event_queue) > 0:
+            ev = self.event_queue.pop(0)
+            if self.estado_actual:
+                self.estado_actual(ev)
+
+    def transicion_a(self, nuevo_estado):
+        if self.estado_actual:
+            self.estado_actual("EXIT")
+        self.estado_actual = nuevo_estado
+        self.estado_actual("ENTRY")
+
+    # ================================
+    # ESTADO CONFIGURACIÓN
+    # ================================
+
+    def estado_configuracion(self, ev):
+
+        if ev == "ENTRY":
+            display.show(FILL[self.tiempo])
+
+        elif ev == "A":
+            if self.tiempo < 25:
+                self.tiempo += 1
+            display.show(FILL[self.tiempo])
+
+        elif ev == "B":
+            if self.tiempo > 15:
+                self.tiempo -= 1
+            display.show(FILL[self.tiempo])
+
+        elif ev == "S":
+            self.transicion_a(self.estado_armado)
+
+    # ================================
+    # ESTADO ARMADO
+    # ================================
+
+    def estado_armado(self, ev):
+
+        if ev == "ENTRY":
+            self.myTimer.start(1000)
+
+        elif ev == "Timeout":
+            if self.tiempo > 0:
+                self.tiempo -= 1
+                display.show(FILL[self.tiempo])
+                self.myTimer.start(1000)
+            else:
+                self.transicion_a(self.estado_final)
+
+        elif ev == "EXIT":
+            self.myTimer.stop()
+
+    # ================================
+    # ESTADO FINAL
+    # ================================
+
+    def estado_final(self, ev):
+
+        if ev == "ENTRY":
+            display.show(Image.SKULL)
+            music.play(music.DADADADUM)
+
+        elif ev == "A":
+            self.tiempo = 20
+            self.transicion_a(self.estado_configuracion)
 
 
+# ================================
+# PROGRAMA PRINCIPAL
+# ================================
+
+task = Task()
+
+while True:
+
+    # EVENTOS DESDE BOTONES FÍSICOS
+    if button_a.was_pressed():
+        task.post_event("A")
+
+    if button_b.was_pressed():
+        task.post_event("B")
+
+    if accelerometer.was_gesture("shake"):
+        task.post_event("S")
+
+    # EVENTOS DESDE p5.js (SERIAL)
+    # EVENTOS DESDE p5.js (SERIAL)
+    if uart.any():
+        raw = uart.read()
+    
+        if raw is not None:
+            data = raw.decode().strip()
+    
+            for char in data:
+                if char == "A":
+                    task.post_event("A")
+                elif char == "B":
+                    task.post_event("B")
+                elif char == "S":
+                    task.post_event("S")
+
+    task.update()
+    utime.sleep_ms(20)
+
+```
+##Codigo de p5.js
+```.asm
+let port;
+let connectBtn;
+
+function setup() {
+  createCanvas(400, 200);
+  background(30);
+
+  connectBtn = createButton("Conectar micro:bit");
+  connectBtn.mousePressed(connectSerial);
+
+  textAlign(CENTER, CENTER);
+  textSize(18);
+}
+
+function draw() {
+  background(30);
+  fill(255);
+  text("Teclas:\nA = UP\nB = DOWN\nS = ARM", width/2, height/2);
+}
+
+async function connectSerial() {
+  port = await navigator.serial.requestPort();
+  await port.open({ baudRate: 115200 });
+}
+
+function keyPressed() {
+  if (!port) return;
+
+  const writer = port.writable.getWriter();
+
+  if (key === 'A' || key === 'a') {
+    writer.write(new TextEncoder().encode("A"));
+  }
+
+  if (key === 'B' || key === 'b') {
+    writer.write(new TextEncoder().encode("B"));
+  }
+
+  if (key === 'S' || key === 's') {
+    writer.write(new TextEncoder().encode("S"));
+  }
+
+  writer.releaseLock();
+}
+
+```
 ## Bitácora de aplicación 
 
 
 
 ## Bitácora de reflexión
+
 
 
 
