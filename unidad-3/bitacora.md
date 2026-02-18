@@ -137,7 +137,89 @@ while True:
     utime.sleep_ms(20)
 
 ```
-### Actividad 2
+### Actividad 2 se uso el temporizador del estado armado se agrego un boton  que dice si se pausa el timer, y otro que al ingresar ABA ocurre un estado( el resto del codigo esta en la parte del notion de la act 2)
+```.asm
+from microbit import *
+from fsm import FSMTask, ENTRY, EXIT
+from utils import FILL
+import utime
+import music
+
+class Temporizador(FSMTask):
+    def __init__(self):
+        super().__init__()
+        self.secuencia =[]
+        self.mypassword =["A","B","A"]
+        self.counter = 20
+        self.myTimer = self.add_timer("Timeout",1000)
+        self.estado_actual = None
+        self.transition_to(self.estado_config)
+
+
+    def estado_config(self, ev):
+        if ev == ENTRY:
+            self.counter = 20
+            display.show(FILL[self.counter])
+            self.myTimer.start()
+        if ev == "A":
+            if self.counter > 15:
+                self.counter -= 1
+            display.show(FILL[self.counter])
+        if ev == "B":
+            if self.counter < 25:
+                self.counter += 1
+            display.show(FILL[self.counter])
+        if ev == "S":
+            self.transition_to(self.estado_armed)
+
+    def estado_armed(self, ev):
+        if ev == ENTRY:
+            self.secuencia.clear()
+            self.myTimer.start()
+        if ev == "Timeout":
+            if self.counter > 0:
+                self.counter -= 1
+                display.show(FILL[self.counter])
+                if self.counter == 0:
+                    self.transition_to(self.estado_timeout)
+                else:
+                    self.myTimer.start()
+        if ev == "A":
+            if self.myTimer.active == False:
+                self.myTimer.start()
+            else:
+                self.myTimer.stop()
+        if ev == "A" or ev == "B":
+            self.secuencia.append(ev)
+            if len(self.secuencia) == 3:
+                if self.secuencia == self.mypassword:
+                    self.transition_to(self.estado_config)
+                else :
+                    self.secuencia.clear()
+        
+
+    def estado_timeout(self, ev):
+        if ev == ENTRY:
+            display.show(Image.SKULL)
+            music.play(music.FUNERAL)
+        if ev == "A":
+            music.stop()
+            self.transition_to(self.estado_config)
+
+temporizador = Temporizador()
+
+while True:
+
+    if button_a.was_pressed():
+        temporizador.post_event("A")
+    if button_b.was_pressed():
+        temporizador.post_event("B")
+    if accelerometer.was_gesture("shake"):
+        temporizador.post_event("S")
+
+    temporizador.update()
+    utime.sleep_ms(20)
+```
 ## Bitácora de proceso de aprendizaje
 
 
@@ -146,3 +228,4 @@ while True:
 
 
 ## Bitácora de reflexión
+
