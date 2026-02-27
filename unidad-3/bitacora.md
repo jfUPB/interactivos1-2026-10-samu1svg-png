@@ -752,7 +752,10 @@ const EVENTS = {
   START: "S",
   TICK: "Timeout",
 };
-
+// ===== SERIAL =====
+let port;
+let reader;
+let connectBtn;
 let serial;
 let secuencia = [];
 let temporizador;
@@ -834,9 +837,9 @@ function setup() {
   // Serial compatible
   serial = createSerial();
 
-  let connectButton = createButton("Conectar micro:bit");
-  connectButton.position(20, 20);
-  connectButton.mousePressed(() => serial.requestPort());
+  connectBtn = createButton("Conectar micro:bit");
+connectBtn.position(20, 20);
+connectBtn.mousePressed(connectSerial);
 
   temporizador = new Temporizador(
     TIMER_LIMITS.min,
@@ -918,6 +921,70 @@ function keyPressed() {
   if (key === "b" || key === "B") procesarB();
   if (key === "s" || key === "S") temporizador.postEvent(EVENTS.START);
 }
+// ===============================
+// CONEXIÓN SERIAL
+// ===============================
+
+async function connectSerial() {
+
+  if (!("serial" in navigator)) {
+    alert("Usa Chrome para conectar el micro:bit");
+    return;
+  }
+
+  try {
+    port = await navigator.serial.requestPort();
+    await port.open({ baudRate: 115200 });
+
+    const textDecoder = new TextDecoderStream();
+    port.readable.pipeTo(textDecoder.writable);
+    reader = textDecoder.readable.getReader();
+
+    readSerial();
+
+    console.log("Micro:bit conectado ✔");
+
+  } catch (error) {
+    console.error("Error al conectar:", error);
+  }
+}
+
+
+// ===============================
+// LECTURA CONTINUA
+// ===============================
+
+async function readSerial() {
+
+  while (true) {
+
+    const { value, done } = await reader.read();
+
+    if (done) {
+      reader.releaseLock();
+      break;
+    }
+
+    if (value) {
+
+      let data = value.trim();
+      console.log("Recibido:", data);
+
+      // 🔥 AQUÍ SE CONECTA CON TU FSM REAL
+      if (data === "A") {
+        procesarA();
+      }
+
+      if (data === "B") {
+        procesarB();
+      }
+
+      if (data === "S") {
+        temporizador.postEvent(EVENTS.START);
+      }
+    }
+  }
+}
 ```
 ### index.html
 ```.asm
@@ -966,5 +1033,52 @@ while True:
 
 
 ## Bitácora de reflexión
+cambios en el codigo:
+### microbit emisor
+```.asm
+from microbit import *
+import utime
+import radio
+radio.config(group=47)
+radio.on()
+
+uart.init(baudrate=115200)
+
+while True:
+    message= radio.receive() 
+    
+    if message == 'A\n':
+        uart.write('A\n')
+    if message == 'B\n':
+        uart.write('B\n')
+    if message == 'S\n':
+        uart.write('S\n')
+    if button_a.was_pressed():
+        uart.write("A\n")
+    if button_b.was_pressed():
+        uart.write("B\n")
+    if accelerometer.was_gesture("shake"):
+        uart.write("S\n")
+        utime.sleep_ms(500)
+
+    utime.sleep_ms(20)
+```
+### microbit receptor
+```.asm
+from microbit import *
+import radio
+radio.config(group=47)
+
+radio.on()
+
+while True:
+
+    if button_a.was_pressed():
+        radio.send('A\n')
+    if button_b.was_pressed():
+        radio.send('B\n')
+    if accelerometer.was_gesture("shake"):
+        radio.send('S\n')
+```
 
 
