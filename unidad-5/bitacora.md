@@ -1,4 +1,33 @@
 # Unidad 5
+*Documenta en tu bitácora todo el proceso de construcción: las pruebas intermedias, los errores que encontraste y cómo los solucionaste. Incluye evidencia de que tu sistema funciona: capturas de consola mostrando datos válidos, y si es posible, capturas de errores de checksum detectados y descartados correctamente.*
+como primer acercamiento
+le escribi a la ia (chatgpt) algunos enunciados bien formados para darle la mayor cantidad de contexto de la actividad, mandandole codigos, actividades pasadas, contexto de la unidad y algunas especificaciones con respecto al nombre del nuevo adaptador binario
+```javascript
+1. "ok chat nueva actividad en base al archivo que estamos usando ahora tendremos que en vez de usar
+ un adaptador ascii usar uno que envie datos en binario, un parentesis no ejecutes o lo comiences a
+hacer sin antes recibir el la palabra paranga la cual te dire al final cuando crea que ya tienes todo
+el contexto completo de la actividad te mandare en los siguientes mensajes algunos parametros mas otras
+actividades adicionales que te puedan retroalimentar la actividad"
+
+2. "ok adicionalmente quiero que me digas que implementas en cada cosa o que cambias en el codigo, te
+mandare ahora otras actividades para que tengas el contexto completo luego te mandare el ejemplo base
+del adaptador de visual code para que lo modifiques segun la actividad, y por ultimo dime que otra cosa
+necesitas del codigo para cambiar ( el nombre del adaptador binario sera MicrobitBinaryAdapter.js)"
+``` 
+para que el adaptador binario funcione utilice un buffer que almacena los datos que le entran verificadon header check sum y que la cantidad no sobrepase los 8 datos segun lo pedido en la actividad
+
+
+como primer problema que me encontre es que los datos que se le enviaban llegan en desorden asi que coloque un console.log para verificar que le estaban llegando
+<img width="733" height="360" alt="image" src="https://github.com/user-attachments/assets/060c47b1-d95d-4252-9909-ab93e7ecd3fb" />
+
+
+
+
+luego de preguntarle a la ia la razon me di cuenta que mi problema fue un error de conceptos y de no utilizar microbit:editor para organizar los datos con anterioridad en el protocolo framing luego de pedirle a la ia el codigo de microbit editor y de ponerlo a funcionar  ya funcionaba como se pide en la actividad
+
+<img width="1434" height="510" alt="image" src="https://github.com/user-attachments/assets/e15d1fc9-c8d4-4f9d-a985-1b74805abb03" />
+
+
 
 ## Bitácora de aplicación 
 ## Microbit:editor
