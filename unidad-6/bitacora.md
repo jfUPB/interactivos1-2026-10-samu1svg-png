@@ -152,6 +152,17 @@ Se respetó completamente la arquitectura desacoplada.
 * El sistema final es estable, entendible y defendible.
 
 ---
+## parentesis 
+Luego de mostrar la simulación el profesor pidio que el sistema fuera realmente funciona y que cumpliera con la rubrica por lo que accedio a darme mas tiempo para el cambio
 
+## 10. Integración final y funcionamiento del sistema
+
+En la fase final se logró la integración real con Strudel, identificando que el problema principal no era de código sino de comunicación: el sistema utilizaba dos bridges en puertos distintos, por lo que los eventos nunca llegaban al frontend. La solución consistió en unificar el flujo en un mismo puerto, permitiendo que Strudel enviara eventos correctamente al bridgeServer, el cual los reenvía al frontend.
+
+El StrudelAdapter cumple el rol de traducir los mensajes entrantes (formato tipo OSC) a un formato normalizado con type, timestamp y payload, evitando que el frontend procese datos crudos. De esta forma se mantiene la arquitectura desacoplada.
+
+Además, se implementó un sistema de cola temporal (eventQueue) donde los eventos no se ejecutan al llegar, sino cuando el tiempo local (Date.now()) alcanza su timestamp. Esto permite separar transporte de ejecución, mejorando la sincronización audiovisual y evitando problemas de latencia.
+
+Como resultado, el sistema recibe eventos reales en tiempo real, los normaliza, los programa temporalmente y los representa visualmente de forma coherente con el ritmo musical, cumpliendo los requisitos funcionales y arquitectónicos de la actividad.
 
 ## Bitácora de reflexión
