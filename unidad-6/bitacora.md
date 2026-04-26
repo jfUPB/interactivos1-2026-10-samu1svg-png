@@ -165,4 +165,114 @@ Además, se implementó un sistema de cola temporal (eventQueue) donde los event
 
 Como resultado, el sistema recibe eventos reales en tiempo real, los normaliza, los programa temporalmente y los representa visualmente de forma coherente con el ritmo musical, cumpliendo los requisitos funcionales y arquitectónicos de la actividad.
 
+# (rompio la arquitectura se comenzo desde cero)
+# Bitácora — Integración Strudel
+
+## 1. ¿Cómo configuré Strudel para emitir eventos?
+
+Se configuró Strudel para funcionar como generador de eventos musicales en el navegador, enviando mensajes mediante WebSocket hacia el puerto `8080`.
+
+Para las pruebas, se utilizó un cliente WebSocket que enviaba mensajes con la estructura esperada por Strudel:
+
+- Dirección del evento (`/dirt/play`)
+- Argumentos en formato clave-valor (`args`)
+- Marca temporal (`timestamp`)
+
+Ejemplo de mensaje emitido:
+
+```json
+{
+  "address": "/dirt/play",
+  "args": ["s", "bd", "delta", 0.5],
+  "timestamp": 1710000000000
+}
+```
+## 2. ¿Qué estructura final de mensaje decidí usar?
+
+Se definió un contrato normalizado para desacoplar el sistema del formato crudo de Strudel:
+```json
+{
+  "type": "strudel",
+  "timestamp": 1710000000000,
+  "payload": {
+    "sound": "bd",
+    "delta": 0.5
+  }
+}
+```
+Este formato:
+
+Es claro y consistente
+Evita exponer el formato interno de Strudel al frontend
+Facilita la extensión futura del sistema
+## 3. ¿Cómo conecté bridgeClient.js, FSMTask, updateLogic y drawRunning?
+
+La conexión se realizó respetando la arquitectura por capas:
+
+bridgeClient.js
+Recibe los mensajes desde bridgeServer.js
+Identifica mensajes de tipo "strudel"
+Dispara eventos hacia la FSM mediante postEvent
+FSMTask (StrudelTask)
+Recibe eventos ya normalizados
+Maneja estados (esperando → corriendo)
+Encola eventos musicales
+updateLogic
+Procesa la cola de eventos (eventQueue)
+Ejecuta eventos cuando el tiempo actual alcanza su timestamp
+Actualiza el estado de las animaciones (progreso temporal)
+drawRunning
+Solo dibuja
+No interpreta eventos ni lógica de red
+Usa el estado calculado para renderizar
+## 4. ¿Cómo separé recepción, cola temporal y renderizado?
+
+Se separaron claramente las responsabilidades:
+
+Recepción
+Ocurre en bridgeClient.js
+Solo recibe y reenvía eventos a la FSM
+Cola temporal (Scheduling)
+Implementada en StrudelTask mediante eventQueue
+Los eventos se ordenan por timestamp
+Se ejecutan únicamente cuando corresponde en el tiempo
+Renderizado
+Implementado en drawRunning
+Solo dibuja animaciones activas
+No contiene lógica de red ni parsing
+
+Esto permite mantener un sistema desacoplado y fácil de mantener.
+
+## 5. ¿Qué pruebas hice para verificar la sincronización?
+
+Se realizaron varias pruebas:
+
+Envío manual de eventos con timestamp futuro para verificar ejecución retardada
+Uso de console.log en:
+recepción de mensajes
+normalización
+entrada a la cola
+ejecución de eventos
+Comparación visual entre ritmo de eventos y aparición de animaciones
+Pruebas variando delta para verificar duración de animaciones
+
+Se comprobó que:
+
+Los eventos no se ejecutan al llegar
+Se respetan los tiempos definidos por timestamp
+Las animaciones siguen el ritmo correctamente
+## 6. Problemas encontrados y soluciones
+
+Durante la integración de Strudel se presentaron varios problemas relacionados con arquitectura, sincronización y configuración del sistema.
+
+Inicialmente, el sistema no reconocía el `StrudelAdapter` debido a una ruta incorrecta en el `require`. Esto se solucionó corrigiendo la ruta hacia la carpeta `adapters`.
+
+Otro problema importante fue que los eventos se ejecutaban inmediatamente al llegar, ignorando su `timestamp`. Esto ocurría porque no existía una lógica de scheduling. Se resolvió implementando una cola de eventos (`eventQueue`) ordenada por tiempo y ejecutando cada evento solo cuando `Date.now()` alcanzaba su `timestamp`.
+
+También se detectó que las visuales no coincidían con el comportamiento del repositorio de referencia. La causa era el uso de decrementos artificiales (`life--`) en lugar de un progreso basado en tiempo real. Se solucionó calculando un `progress` usando `(tiempo actual - tiempo inicial) / duración`, lo que permitió sincronizar correctamente las animaciones con el ritmo.
+
+
+Finalmente, Strudel no se conectaba automáticamente porque el sistema estaba diseñado para dispositivos como micro:bit. Se solucionó creando un servidor WebSocket independiente en el puerto 8080 para recibir los eventos de Strudel sin interferir con el resto del sistema.
+
+
 ## Bitácora de reflexión
