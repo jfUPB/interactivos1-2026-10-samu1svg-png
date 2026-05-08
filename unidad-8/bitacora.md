@@ -1,8 +1,101 @@
 # Unidad 8
 
 ## Bitácora de proceso de aprendizaje
+### strudel musica:
+```
+setcps(0.38)
 
+stack(
 
+  // BOMBO MUY SUAVE
+  s("bd ~ ~ ~ ~ ~ ~ ~")
+    .gain(0.7)
+    .shape(0.12),
+
+  // SNARE LEJANA
+  s("~ ~ ~ sd ~ ~ ~ ~")
+    .gain(0.55)
+    .room(0.5),
+
+  // HI HATS DELICADOS
+  s("~ ~ hh ~ ~ ~ hh ~")
+    .gain(0.08)
+    .hpf(9000)
+    .room(0.2)
+    .pan(sine.range(-0.15,0.15).slow(8)),
+
+  // PLATILLO AMBIENTAL
+  s("~ ~ ~ oh")
+    .gain(0.22)
+    .room(0.98)
+    .slow(4),
+
+  // PLATILLO LARGO
+  s("~ ~ ~ hc")
+    .gain(0.14)
+    .room(1)
+    .slow(8),
+
+  // BAJO OSCURO ACOMPAÑANDO
+  note("c1 ~ g0 ~")
+    .sound("square")
+    .gain(0.6)
+    .distort(0.12)
+    .lpf(220)
+    .slow(4),
+
+  // GUITARRA DISTORSIONADA PRINCIPAL
+  note("g2 ~ eb2 ~")
+    .sound("gm_distortion_guitar")
+    .gain(0.55)
+    .room(0.92)
+    .lpf(1600)
+    .slow(5),
+
+  // GUITARRA FLOTANTE MELANCOLICA
+  note("g3 ~ f3 ~")
+    .sound("gm_overdriven_guitar")
+    .gain(0.38)
+    .room(1)
+    .slow(7),
+
+  // DRONE CASI IMPERCEPTIBLE
+  note("c2")
+    .sound("triangle")
+    .gain(0.035)
+    .room(1)
+    .slow(40),
+
+  // TEXTURA ANALOGICA
+  noise()
+    .gain(0.008)
+    .lpf(900)
+
+)
+```
+
+### Microbit: editor codigo:
+```
+from microbit import *
+
+uart.init(baudrate=115200)
+
+while True:
+    x = accelerometer.get_x()
+    y = accelerometer.get_y()
+
+    a = button_a.is_pressed()
+    b = button_b.is_pressed()
+
+    uart.write(
+        str(x) + "," +
+        str(y) + "," +
+        str(a) + "," +
+        str(b) + "\n"
+    )
+
+    sleep(30)
+```
 ## Bitácora de aplicación 
 ### Diagrama inicial de arquitectura
 ```
