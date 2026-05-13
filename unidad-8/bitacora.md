@@ -60,38 +60,67 @@ $: stack(noiseLayer)
 ```
 ### strudel musica1:
 ```
-setcps(0.38)
+// ========================================
+// LIVE CONTROLS
+// ========================================
+
+let tempo = 0.38
+
+let kickGain = 0.7
+let snareGain = 0.55
+let hatsGain = 0.08
+
+let bassSpeed = 4
+let guitarSpeed = 5
+
+let ambience = 1
+
+// ========================================
+
+setcps(tempo)
+
+// ========================================
+// DRUMS
+// ========================================
 
 let kick =
   s("bd ~ ~ ~ ~ ~ ~ ~")
-    .gain(0.7)
+    .gain(kickGain)
     .shape(0.12)
 
 let snare =
   s("~ ~ ~ sd ~ ~ ~ ~")
-    .gain(0.55)
-    .room(0.5)
+    .gain(snareGain)
+    .room(0.5 * ambience)
 
 let hats =
   s("~ ~ hh ~ ~ ~ hh ~")
-    .gain(0.08)
+    .gain(hatsGain)
     .hpf(9000)
     .room(0.2)
     .pan(
       sine.range(-0.15,0.15).slow(8)
     )
 
+// ========================================
+// CYMBALS
+// ========================================
+
 let cymbal1 =
   s("~ ~ ~ oh")
     .gain(0.22)
-    .room(0.98)
+    .room(0.98 * ambience)
     .slow(4)
 
 let cymbal2 =
   s("~ ~ ~ hc")
     .gain(0.14)
-    .room(1)
+    .room(1 * ambience)
     .slow(8)
+
+// ========================================
+// BASS
+// ========================================
 
 let bass =
   note("c1 ~ g0 ~")
@@ -99,22 +128,30 @@ let bass =
     .gain(0.6)
     .distort(0.12)
     .lpf(220)
-    .slow(4)
+    .slow(bassSpeed)
+
+// ========================================
+// GUITARS
+// ========================================
 
 let guitar1 =
   note("g2 ~ eb2 ~")
     .sound("gm_distortion_guitar")
     .gain(0.55)
-    .room(0.92)
+    .room(0.92 * ambience)
     .lpf(1600)
-    .slow(5)
+    .slow(guitarSpeed)
 
 let guitar2 =
   note("g3 ~ f3 ~")
     .sound("gm_overdriven_guitar")
     .gain(0.38)
-    .room(1)
-    .slow(7)
+    .room(1 * ambience)
+    .slow(guitarSpeed + 2)
+
+// ========================================
+// DRONE
+// ========================================
 
 let drone =
   note("c2")
@@ -122,6 +159,10 @@ let drone =
     .gain(0.035)
     .room(1)
     .slow(40)
+
+// ========================================
+// OUTPUTS
+// ========================================
 
 $: stack(
   kick,
