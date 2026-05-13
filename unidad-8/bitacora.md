@@ -1,7 +1,64 @@
 # Unidad 8
 
 ## Bitácora de proceso de aprendizaje
-### strudel musica:
+### strudel musica2:
+```
+// ============================================
+// VARIACION 3
+// MÁS POST-PUNK / ROCK
+// ============================================
+
+setcps(0.5)
+
+let kick =
+  s("bd bd ~ bd ~ bd bd ~")
+    .gain(0.75)
+    .shape(0.1)
+
+let snare =
+  s("~ ~ sd ~ ~ ~ sd sd")
+    .gain(0.7)
+    .room(0.4)
+
+let hats =
+  s("hh*8")
+    .gain(0.025)
+    .hpf(12000)
+
+let bass =
+  note("c1 c1 g0 bb0")
+    .sound("square")
+    .gain(0.65)
+    .distort(0.1)
+    .lpf(300)
+
+let guitar1 =
+  note("g2 bb2 eb2 f2")
+    .sound("gm_distortion_guitar")
+    .gain(0.6)
+    .room(0.7)
+
+let guitar2 =
+  note("g3 ~ d3 ~")
+    .sound("gm_overdriven_guitar")
+    .gain(0.28)
+    .room(1)
+    .slow(4)
+
+let noiseLayer =
+  noise()
+    .gain(0.004)
+    .lpf(700)
+
+$: stack(kick, kick.osc())
+$: stack(snare, snare.osc())
+$: stack(hats, hats.osc())
+$: stack(bass, bass.osc())
+$: stack(guitar1, guitar1.osc())
+$: stack(guitar2, guitar2.osc())
+$: stack(noiseLayer)
+```
+### strudel musica1:
 ```
 setcps(0.38)
 
