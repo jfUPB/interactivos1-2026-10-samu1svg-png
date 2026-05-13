@@ -62,72 +62,110 @@ $: stack(noiseLayer)
 ```
 setcps(0.38)
 
-stack(
-
-  // BOMBO MUY SUAVE
+let kick =
   s("bd ~ ~ ~ ~ ~ ~ ~")
     .gain(0.7)
-    .shape(0.12),
+    .shape(0.12)
 
-  // SNARE LEJANA
+let snare =
   s("~ ~ ~ sd ~ ~ ~ ~")
     .gain(0.55)
-    .room(0.5),
+    .room(0.5)
 
-  // HI HATS DELICADOS
+let hats =
   s("~ ~ hh ~ ~ ~ hh ~")
     .gain(0.08)
     .hpf(9000)
     .room(0.2)
-    .pan(sine.range(-0.15,0.15).slow(8)),
+    .pan(
+      sine.range(-0.15,0.15).slow(8)
+    )
 
-  // PLATILLO AMBIENTAL
+let cymbal1 =
   s("~ ~ ~ oh")
     .gain(0.22)
     .room(0.98)
-    .slow(4),
+    .slow(4)
 
-  // PLATILLO LARGO
+let cymbal2 =
   s("~ ~ ~ hc")
     .gain(0.14)
     .room(1)
-    .slow(8),
+    .slow(8)
 
-  // BAJO OSCURO ACOMPAÑANDO
+let bass =
   note("c1 ~ g0 ~")
     .sound("square")
     .gain(0.6)
     .distort(0.12)
     .lpf(220)
-    .slow(4),
+    .slow(4)
 
-  // GUITARRA DISTORSIONADA PRINCIPAL
+let guitar1 =
   note("g2 ~ eb2 ~")
     .sound("gm_distortion_guitar")
     .gain(0.55)
     .room(0.92)
     .lpf(1600)
-    .slow(5),
+    .slow(5)
 
-  // GUITARRA FLOTANTE MELANCOLICA
+let guitar2 =
   note("g3 ~ f3 ~")
     .sound("gm_overdriven_guitar")
     .gain(0.38)
     .room(1)
-    .slow(7),
+    .slow(7)
 
-  // DRONE CASI IMPERCEPTIBLE
+let drone =
   note("c2")
     .sound("triangle")
     .gain(0.035)
     .room(1)
-    .slow(40),
+    .slow(40)
 
-  // TEXTURA ANALOGICA
-  noise()
-    .gain(0.008)
-    .lpf(900)
+$: stack(
+  kick,
+  kick.osc()
+)
 
+$: stack(
+  snare,
+  snare.osc()
+)
+
+$: stack(
+  hats,
+  hats.osc()
+)
+
+$: stack(
+  cymbal1,
+  cymbal1.osc()
+)
+
+$: stack(
+  cymbal2,
+  cymbal2.osc()
+)
+
+$: stack(
+  bass,
+  bass.osc()
+)
+
+$: stack(
+  guitar1,
+  guitar1.osc()
+)
+
+$: stack(
+  guitar2,
+  guitar2.osc()
+)
+
+$: stack(
+  drone,
+  drone.osc()
 )
 ```
 
